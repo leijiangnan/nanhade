@@ -1,0 +1,15 @@
+vendor
+server.rsa.crt
+server.rsa.key
+*.pem
+*.json
+*.toml
+*.dot
+*.out
+bench_res
+router/hertzserver/utest/log
+
+*DS_Store
+# ides
+.idea
+.code
