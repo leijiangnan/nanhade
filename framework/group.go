@@ -1,32 +1,44 @@
 package framework
 
 type IGroup interface {
-	Get(string, ControllerHandler)
-	Post(string, ControllerHandler)
-	Put(string, ControllerHandler)
-	Delete(string, ControllerHandler)
+	Get(string, ...ControllerHandler)
+	Post(string, ...ControllerHandler)
+	Put(string, ...ControllerHandler)
+	Delete(string, ...ControllerHandler)
 
 	Group(string) IGroup
+	Use(...ControllerHandler)
 }
 
-func (g *Group) Get(uri string, handler ControllerHandler) {
+func (g *Group) Get(uri string, handlers ...ControllerHandler) {
 	uri = g.getAbsolutePrefix() + uri
-	g.core.Get(uri, handler)
+	allHandlers := append(g.getMiddlewares(), handlers...)
+	g.core.Get(uri, allHandlers...)
 }
 
-func (g *Group) Post(uri string, handler ControllerHandler) {
+func (g *Group) Post(uri string, handlers ...ControllerHandler) {
 	uri = g.getAbsolutePrefix() + uri
-	g.core.Post(uri, handler)
+	allHandlers := append(g.getMiddlewares(), handlers...)
+	g.core.Post(uri, allHandlers...)
 }
 
-func (g *Group) Put(uri string, handler ControllerHandler) {
+func (g *Group) Put(uri string, handlers ...ControllerHandler) {
 	uri = g.getAbsolutePrefix() + uri
-	g.core.Put(uri, handler)
+	allHandlers := append(g.getMiddlewares(), handlers...)
+	g.core.Put(uri, allHandlers...)
 }
 
-func (g *Group) Delete(uri string, handler ControllerHandler) {
+func (g *Group) Delete(uri string, handlers ...ControllerHandler) {
 	uri = g.getAbsolutePrefix() + uri
-	g.core.Delete(uri, handler)
+	allHandlers := append(g.getMiddlewares(), handlers...)
+	g.core.Delete(uri, allHandlers...)
+}
+
+func (g *Group) getMiddlewares() []ControllerHandler {
+	if g.parent == nil {
+		return g.middlewares
+	}
+	return append(g.parent.getMiddlewares(), g.middlewares...)
 }
 
 func (g *Group) Group(uri string) IGroup {
@@ -46,12 +58,19 @@ type Group struct {
 	core   *Core
 	parent *Group
 	prefix string
+
+	middlewares []ControllerHandler
 }
 
 func NewGroup(core *Core, prefix string) *Group {
 	return &Group{
-		core:   core,
-		parent: nil,
-		prefix: prefix,
+		core:        core,
+		parent:      nil,
+		prefix:      prefix,
+		middlewares: []ControllerHandler{},
 	}
+}
+
+func (g *Group) Use(middlewares ...ControllerHandler) {
+	g.middlewares = append(g.middlewares, middlewares...)
 }

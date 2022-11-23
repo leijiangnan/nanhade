@@ -31,3 +31,9 @@ func SubjectGetController(c *framework.Context) error {
 	c.Json(200, "ok, SubjectDelController")
 	return nil
 }
+
+func SubjectNameController(c *framework.Context) error {
+	log.Println("SubjectNameController running...")
+	c.Json(200, "ok, SubjectNameController")
+	return nil
+}

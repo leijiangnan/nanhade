@@ -2,11 +2,15 @@ package main
 
 import (
 	"github.com/leijiangnan/nanhade/framework"
+	"github.com/leijiangnan/nanhade/framework/middleware"
 	"net/http"
 )
 
 func main() {
 	core := framework.NewCore()
+
+	core.Use(middleware.Recovery())
+	core.Use(middleware.Cost())
 	registerRouter(core)
 	server := http.Server{
 		Handler: core,

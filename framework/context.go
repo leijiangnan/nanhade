@@ -21,6 +21,9 @@ type Context struct {
 	hasTimeout bool
 	// 写保护机制
 	writerMux *sync.Mutex
+
+	handlers []ControllerHandler
+	index    int
 }
 
 func NewContext(req *http.Request, resp http.ResponseWriter) *Context {
@@ -29,6 +32,7 @@ func NewContext(req *http.Request, resp http.ResponseWriter) *Context {
 		responseWriter: resp,
 		ctx:            req.Context(),
 		writerMux:      &sync.Mutex{},
+		index:          -1,
 	}
 }
 
@@ -52,6 +56,20 @@ func (ctx *Context) SetHasTimeout() {
 
 func (ctx *Context) HasTimeout() bool {
 	return ctx.hasTimeout
+}
+
+func (ctx *Context) SetHandlers(handlers []ControllerHandler) {
+	ctx.handlers = handlers
+}
+
+func (ctx *Context) Next() error {
+	ctx.index++
+	if ctx.index < len(ctx.handlers) {
+		if err := ctx.handlers[ctx.index](ctx); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // #endregion
