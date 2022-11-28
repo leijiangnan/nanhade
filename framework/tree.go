@@ -10,10 +10,11 @@ type Tree struct {
 }
 
 type node struct {
-	isLast  bool
-	segment string
-	handler []ControllerHandler
-	childs  []*node
+	isLast   bool
+	segment  string
+	handlers []ControllerHandler
+	childs   []*node
+	parent   *node
 }
 
 func newNode() *node {
@@ -84,7 +85,7 @@ func (n *node) matchNode(uri string) *node {
 	return nil
 }
 
-func (tree *Tree) AddRouter(uri string, handler []ControllerHandler) error {
+func (tree *Tree) AddRouter(uri string, handlers []ControllerHandler) error {
 	n := tree.root
 	if n.matchNode(uri) != nil {
 		return errors.New("route exist: " + uri)
@@ -112,8 +113,9 @@ func (tree *Tree) AddRouter(uri string, handler []ControllerHandler) error {
 			cnode.segment = segment
 			if isLast {
 				cnode.isLast = true
-				cnode.handler = handler
+				cnode.handlers = handlers
 			}
+			cnode.parent = n
 			n.childs = append(n.childs, cnode)
 			objNode = cnode
 		}
@@ -127,5 +129,22 @@ func (tree *Tree) FindHandler(uri string) []ControllerHandler {
 	if node == nil {
 		return nil
 	}
-	return node.handler
+	return node.handlers
+}
+
+func (n *node) parseParamsFromEndNode(uri string) map[string]string {
+	ret := make(map[string]string)
+	segments := strings.Split(uri, "/")
+	cnt := len(segments)
+	cur := n
+	for i := cnt - 1; i >= 0; i-- {
+		if cur.segment == "" {
+			break
+		}
+		if isWildSegment(cur.segment) {
+			ret[cur.segment[1:]] = segments[i]
+		}
+		cur = cur.parent
+	}
+	return ret
 }
