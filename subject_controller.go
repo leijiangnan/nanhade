@@ -7,33 +7,33 @@ import (
 
 func SubjectAddController(c *framework.Context) error {
 	log.Println("SubjectAddController running...")
-	c.Json(200, "ok, SubjectAddController")
+	c.SetOkStatus().Json("ok, SubjectAddController")
 	return nil
 }
 
 func SubjectListController(c *framework.Context) error {
 	log.Println("SubjectListController running...")
-	c.Json(200, "ok, SubjectListController")
+	c.SetOkStatus().Json("ok, SubjectListController")
 	return nil
 }
 func SubjectDelController(c *framework.Context) error {
 	log.Println("SubjectDelController running...")
-	c.Json(200, "ok, SubjectDelController")
+	c.SetOkStatus().Json("ok, SubjectDelController")
 	return nil
 }
 func SubjectUpdateController(c *framework.Context) error {
 	log.Println("SubjectUpdateController running...")
-	c.Json(200, "ok, SubjectUpdateController")
+	c.SetOkStatus().Json("ok, SubjectUpdateController")
 	return nil
 }
 func SubjectGetController(c *framework.Context) error {
 	log.Println("SubjectDelController running...")
-	c.Json(200, "ok, SubjectDelController")
+	c.SetOkStatus().Json("ok, SubjectDelController")
 	return nil
 }
 
 func SubjectNameController(c *framework.Context) error {
 	log.Println("SubjectNameController running...")
-	c.Json(200, "ok, SubjectNameController")
+	c.SetOkStatus().Json("ok, SubjectNameController")
 	return nil
 }

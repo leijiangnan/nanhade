@@ -32,13 +32,13 @@ func TimeoutHandler(fun ControllerHandler, d time.Duration) ControllerHandler {
 			c.WriterMux().Lock()
 			defer c.WriterMux().Unlock()
 			log.Println(p)
-			c.Json(500, "panic")
+			c.SetStatus(500).Json("panic")
 		case <-finish:
 			fmt.Println("finish")
 		case <-durationCtx.Done():
 			c.WriterMux().Lock()
 			defer c.WriterMux().Unlock()
-			c.Json(500, "time out")
+			c.SetStatus(500).Json("time out")
 			c.SetHasTimeout()
 		}
 		return nil

@@ -23,7 +23,7 @@ func FooControllerHandler(c *framework.Context) error {
 		}()
 		time.Sleep(2 * time.Second)
 		log.Println("2 second later")
-		c.Json(200, "ok")
+		c.SetOkStatus().Json("ok")
 		sonCtx := context.WithValue(c.BaseContext(), "aaa", "bbb")
 		select {
 		case <-sonCtx.Done():
@@ -41,13 +41,13 @@ func FooControllerHandler(c *framework.Context) error {
 		c.WriterMux().Lock()
 		defer c.WriterMux().Unlock()
 		log.Println(p)
-		c.Json(500, "panic")
+		c.SetStatus(500).Json("panic")
 	case <-finish:
 		fmt.Println("finish")
 	case <-durationCtx.Done():
 		c.WriterMux().Lock()
 		defer c.WriterMux().Unlock()
-		c.Json(500, "time out")
+		c.SetStatus(500).Json("time out")
 		c.SetHasTimeout()
 	}
 	return nil
